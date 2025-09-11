@@ -1,0 +1,48 @@
+version: "3.8"
+
+services:
+  frontend:
+    build:
+      context: ./frontend
+    ports:
+      - "3000:3000"
+    volumes:
+      - .:/frontend/app
+      - /app/node_modules
+    environment:
+      - NODE_ENV=production
+      - WATCHPACK_POLLING=true
+
+  backend:
+    build:
+      context: ./backend
+    volumes:
+      - ./backend/app:/code/app
+    ports:
+      - "8000:8000"
+    environment:
+      - DATABASE_URL=postgresql://polarco:polarco@postgres:5432/polarco
+    depends_on:
+      - postgres
+
+  postgres:
+    image: postgres:15
+    restart: always
+    environment:
+      POSTGRES_USER: polarco
+      POSTGRES_PASSWORD: polarco
+      POSTGRES_DB: polarco
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  nginx:
+    image: nginx:latest
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+      - frontend
