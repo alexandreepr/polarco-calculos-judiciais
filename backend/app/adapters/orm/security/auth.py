@@ -11,7 +11,7 @@ from backend.app.adapters.orm.database import get_async_db
 from backend.app.adapters.orm.models.user import User
 
 # Security configuration
-SECRET_KEY = "your-secret-key-here"  # In production, use environment variables
+SECRET_KEY = "secret-key"
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 30
 
@@ -32,6 +32,12 @@ def create_access_token(data: Dict[str, Any], expires_delta: Optional[timedelta]
     to_encode.update({"exp": expire})
     encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
     return encoded_jwt
+
+def create_refresh_token(data: Dict[str, Any], expires_delta: Optional[timedelta] = None) -> str:
+    to_encode = data.copy()
+    expire = datetime.now(timezone.utc) + (expires_delta or timedelta(days=7))
+    to_encode.update({"exp": expire, "iat": datetime.now(timezone.utc)})
+    return jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
 
 # User authentication
 async def authenticate_user(db: AsyncSession, username: str, password: str) -> User | None:
