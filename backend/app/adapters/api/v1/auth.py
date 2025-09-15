@@ -5,7 +5,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.value_objects.token import TokenResponse
 from backend.app.adapters.orm.database import get_async_db
-from app.core.use_cases.auth import login_for_access_token_use_case, refresh_access_token_use_case
+from app.core.use_cases.auth import login_for_access_token_use_case, refresh_access_token_use_case, revoke_refresh_token
 
 auth_router = APIRouter(prefix="/auth", tags=["Authentication"])
 
@@ -55,7 +55,18 @@ async def refresh_access_token(
         samesite="lax",
         max_age=60*60*24*7
     )
+
     return TokenResponse(
         access_token=token.access_token,
         token_type=token.token_type
     )
+
+@auth_router.post("/logout")
+async def logout(
+    db: AsyncSession = Depends(get_async_db),
+    refresh_token: str = Cookie(None)
+):
+    await revoke_refresh_token(db, refresh_token)
+    response = Response()
+    response.delete_cookie("refresh_token")
+    return {"detail": "Logged out"}
