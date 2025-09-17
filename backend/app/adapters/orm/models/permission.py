@@ -5,7 +5,6 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 from role import Role
 from user import User
 from base import Base
-import uuid
 from association_tables import role_permissions, user_permissions
 
 

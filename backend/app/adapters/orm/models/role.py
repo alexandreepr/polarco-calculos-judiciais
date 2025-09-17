@@ -8,7 +8,6 @@ from group import Group
 from permission import Permission
 from user import User
 from base import Base
-import uuid
 from association_tables import role_permissions, user_roles, group_roles
 
 class Role(Base):

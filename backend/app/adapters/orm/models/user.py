@@ -5,7 +5,6 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from backend.app.adapters.orm.models.company import Company
 from base import Base
-import uuid
 from role import Role
 from permission import Permission
 from group import Group
