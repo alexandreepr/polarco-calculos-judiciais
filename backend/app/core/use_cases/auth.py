@@ -1,3 +1,4 @@
+import uuid
 from fastapi import HTTPException, status, BackgroundTasks, Request
 from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy import select
@@ -32,6 +33,8 @@ async def login_for_access_token_use_case(
         data={"sub": str(user.id)},
         expires_delta=timedelta(days=7)
     )
+
+    await store_refresh_token(db, user.id, refresh_token)
 
     background_tasks.add_task(
         create_audit_log,
@@ -79,16 +82,16 @@ async def refresh_access_token_use_case(
             details={"success": True},
             ip_address=request.client.host if request and request.client else None
         )
-        
+
     return Token(access_token=access_token, refresh_token=new_refresh_token, token_type="bearer")
 
-async def store_refresh_token(db: AsyncSession, user_id: int, token: str, expires_in_days: int = 7):
+async def store_refresh_token(db: AsyncSession, user_id: uuid.UUID, token: str, expires_in_days: int = 7):
     expires_at = datetime.now(timezone.utc) + timedelta(days=expires_in_days)
     db_token = RefreshToken(user_id=user_id, token=token, expires_at=expires_at)
     db.add(db_token)
     await db.commit()
     await db.refresh(db_token)
-    
+
     return db_token
 
 async def revoke_refresh_token(db: AsyncSession, token: str):

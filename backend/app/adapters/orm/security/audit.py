@@ -1,14 +1,15 @@
 from typing import Any, Dict, Optional
+import uuid
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from models.audit_log import AuditLog
 
 async def create_audit_log(
     db: AsyncSession,
-    user_id: Optional[int],
+    user_id: Optional[uuid.UUID],
     action: str,
     resource_type: str,
-    resource_id: Optional[int] = None,
+    resource_id: Optional[uuid.UUID] = None,
     details: Optional[Dict[str, Any]] = None,
     ip_address: Optional[str] = None
 ) -> AuditLog:
