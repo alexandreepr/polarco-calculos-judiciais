@@ -11,7 +11,6 @@ class CompanyCreate(CompanyBase):
 
 class CompanyUpdate(BaseModel):
     name: Optional[str] = None
-    cnpj: Optional[str] = None
     is_active: Optional[bool] = None
 
 

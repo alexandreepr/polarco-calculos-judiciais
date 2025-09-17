@@ -8,12 +8,12 @@ from group import Group
 from permission import Permission
 from user import User
 from base import Base
+import uuid
 from association_tables import role_permissions, user_roles, group_roles
 
 class Role(Base):
     __tablename__ = 'roles'
 
-    id: Mapped[int] = mapped_column(primary_key=True)
     name: Mapped[str] = mapped_column(String(50), unique=True, index=True)
     description: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
 

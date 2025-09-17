@@ -5,13 +5,13 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 from role import Role
 from user import User
 from base import Base
+import uuid
 from association_tables import role_permissions, user_permissions
 
 
 class Permission(Base):
     __tablename__ = 'permissions'
 
-    id: Mapped[int] = mapped_column(primary_key=True)
     name: Mapped[str] = mapped_column(String(100), unique=True, index=True)
     resource: Mapped[str] = mapped_column(String(100))
     action: Mapped[str] = mapped_column(String(50))
