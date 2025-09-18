@@ -2,12 +2,11 @@ from typing import List, Optional
 from sqlalchemy import String, Text
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
-from .base import Base
-from .role import Role
-from .user import User
-from .association_tables import user_groups, group_roles
+from backend.app.adapters.orm.models.base import Base
+from backend.app.adapters.orm.models.role import Role
+from backend.app.adapters.orm.models.user import User
 
-
+from backend.app.adapters.orm.models.association_tables import group_roles, user_groups
 class Group(Base):
     __tablename__ = 'groups'
 
