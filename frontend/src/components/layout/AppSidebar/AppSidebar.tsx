@@ -1,20 +1,18 @@
 import * as React from "react"
 import {
   ArrowUpCircleIcon,
-  BarChartIcon,
+  CalendarDaysIcon,
   CameraIcon,
-  ClipboardListIcon,
-  DatabaseIcon,
   FileCodeIcon,
   FileIcon,
   FileTextIcon,
-  FolderIcon,
+  BanknoteArrowDownIcon,
   HelpCircleIcon,
   LayoutDashboardIcon,
-  ListIcon,
+  ScaleIcon,
   SearchIcon,
   SettingsIcon,
-  UsersIcon,
+  CircleQuestionMarkIcon,
 } from "lucide-react"
 
 import { NavDocuments } from "@/components/layout/Nav/NavDocuments"
@@ -30,6 +28,7 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar"
+import { Avatar, AvatarImage } from "@/components/ui/avatar"
 
 const data = {
   user: {
@@ -44,24 +43,24 @@ const data = {
       icon: LayoutDashboardIcon,
     },
     {
-      title: "Lifecycle",
+      title: "Processos",
       url: "#",
-      icon: ListIcon,
+      icon: ScaleIcon,
     },
     {
-      title: "Analytics",
+      title: "Agenda",
       url: "#",
-      icon: BarChartIcon,
+      icon: CalendarDaysIcon,
     },
     {
-      title: "Projects",
+      title: "Despesas",
       url: "#",
-      icon: FolderIcon,
+      icon: BanknoteArrowDownIcon,
     },
     {
-      title: "Team",
+      title: "Relatórios",
       url: "#",
-      icon: UsersIcon,
+      icon: FileIcon,
     },
   ],
   navClouds: [
@@ -131,26 +130,17 @@ const data = {
   ],
   documents: [
     {
-      name: "Data Library",
+      name: "FAQ | Treinamento",
       url: "#",
-      icon: DatabaseIcon,
-    },
-    {
-      name: "Reports",
-      url: "#",
-      icon: ClipboardListIcon,
-    },
-    {
-      name: "Word Assistant",
-      url: "#",
-      icon: FileIcon,
+      icon: CircleQuestionMarkIcon,
     },
   ],
 }
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   return (
-    <Sidebar collapsible="offcanvas" {...props}>
+    // Fix width
+    <Sidebar collapsible="offcanvas" className="w-200" {...props}>
       <SidebarHeader>
         <SidebarMenu>
           <SidebarMenuItem>
@@ -159,8 +149,10 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
               className="data-[slot=sidebar-menu-button]:!p-1.5"
             >
               <a href="#">
-                <ArrowUpCircleIcon className="h-5 w-5" />
-                <span className="text-base font-semibold">Acme Inc.</span>
+                <Avatar className="h-7 w-7">
+                  <AvatarImage src="/src/assets/Logo_PBL_Fundo_Verde.jpg" alt="Logo" />
+                </Avatar>
+                <span className="text-base font-semibold">PBL Compra de Créditos Judiciais</span>
               </a>
             </SidebarMenuButton>
           </SidebarMenuItem>
