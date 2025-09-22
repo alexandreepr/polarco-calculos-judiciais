@@ -140,7 +140,7 @@ const data = {
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   return (
     // Fix width
-    <Sidebar collapsible="offcanvas" className="w-200" {...props}>
+    <Sidebar collapsible="offcanvas" className="max-w-[200px]" {...props}>
       <SidebarHeader>
         <SidebarMenu>
           <SidebarMenuItem>

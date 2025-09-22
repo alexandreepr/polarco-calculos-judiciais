@@ -1,5 +1,5 @@
 import * as React from "react"
-import { Bar, BarChart, CartesianGrid, XAxis, YAxis } from "recharts"
+import { Area, AreaChart, Bar, BarChart, CartesianGrid, Line, LineChart, XAxis, YAxis } from "recharts"
 
 import { useIsMobile } from "@/hooks/use-mobile"
 import {
@@ -29,14 +29,21 @@ import {
 
 export const description = "Bar charts by user"
 
-// Mock data: totals by user
-const chartDataByUser = [
-  { user: "Alice", comprado: 3200, liquidado: 2800 },
-  { user: "Bob", comprado: 4100, liquidado: 3900 },
-  { user: "Carol", comprado: 3700, liquidado: 3500 },
-  { user: "David", comprado: 2900, liquidado: 2700 },
-  { user: "Eve", comprado: 4500, liquidado: 4200 },
+const chartDataByUserAndDate = [
+  { dateOfPurchase: "2024-01-01", user: "Maria Silva", comprado: 1200, liquidado: 1000 },
+  { dateOfPurchase: "2024-01-01", user: "Carlos Pereira", comprado: 900, liquidado: 800 },
+  { dateOfPurchase: "2024-02-01", user: "Maria Silva", comprado: 1500, liquidado: 1400 },
+  { dateOfPurchase: "2024-02-01", user: "Carlos Pereira", comprado: 1100, liquidado: 900 },
+  { dateOfPurchase: "2024-03-01", user: "Maria Silva", comprado: 1700, liquidado: 1600 },
+  { dateOfPurchase: "2024-03-01", user: "Carlos Pereira", comprado: 1200, liquidado: 1100 },
+  { dateOfPurchase: "2024-03-01", user: "Ana Oliveira", comprado: 1000, liquidado: 900 },
+  { dateOfPurchase: "2024-04-01", user: "Ana Oliveira", comprado: 1300, liquidado: 1200 },
+  { dateOfPurchase: "2024-04-01", user: "Bruno Costa", comprado: 900, liquidado: 800 },
+  { dateOfPurchase: "2024-05-01", user: "Maria Silva", comprado: 2000, liquidado: 1800 },
+  { dateOfPurchase: "2024-05-01", user: "Bruno Costa", comprado: 1100, liquidado: 1000 }
 ]
+
+// Get unique users for chart series
 
 const chartConfig = {
   comprado: {
@@ -49,68 +56,99 @@ const chartConfig = {
   },
 } satisfies ChartConfig
 
-export function ChartAreaInteractive() {
-  // const isMobile = useIsMobile()
-  const [userRange, setUserRange] = React.useState("all")
-  const [userRange2, setUserRange2] = React.useState("all")
+const users = Array.from(new Set(chartDataByUserAndDate.map(d => d.user)))
 
-  const filteredData = React.useMemo(() => {
-    if (userRange === "last3" || userRange2 === "current") {
-      return chartDataByUser.slice(0, 3)
+function aggregateByUser(data, valueKey, startDate, endDate) {
+  const userTotals = {}
+  data.forEach(item => {
+    const date = new Date(item.dateOfPurchase)
+    if (date >= startDate && date <= endDate) {
+      userTotals[item.user] = (userTotals[item.user] || 0) + (item[valueKey] || 0)
     }
-    return chartDataByUser
-  }, [userRange])
+  })
+  // Sort users by value (ascending)
+  return users
+    .map(user => ({
+      user,
+      value: userTotals[user] || 0
+    }))
+    .sort((a, b) => a.value - b.value)
+}
 
-  const filteredData2 = React.useMemo(() => {
-    if (userRange2 === "last3" || userRange2 === "current") return chartDataByUser.slice(0, 3)
-    return chartDataByUser
-  }, [userRange2])
+export function ChartAreaInteractive() {
+  const isMobile = useIsMobile()
+  const [timeRange, setTimeRange] = React.useState("12m")
+  
+  
+  React.useEffect(() => {
+    if (isMobile) {
+      setTimeRange("1m")
+    }
+  }, [isMobile])
+
+  // Calculate date range based on toggle
+  const referenceDate = new Date("2024-06-30")
+  let daysToSubtract = 365
+  if (timeRange === "3m") {
+    daysToSubtract = 90
+  } else if (timeRange === "1m") {
+    daysToSubtract = 30
+  }
+  const startDate = new Date(referenceDate)
+  startDate.setDate(startDate.getDate() - daysToSubtract)
+
+  // Aggregate data for each user in the selected date range
+  const compradoData = React.useMemo(
+    () => aggregateByUser(chartDataByUserAndDate, "comprado", startDate, referenceDate),
+    [timeRange]
+  )
+  const liquidadoData = React.useMemo(
+    () => aggregateByUser(chartDataByUserAndDate, "liquidado", startDate, referenceDate),
+    [timeRange]
+  )
 
   return (
     <div className="flex flex-col gap-4 md:flex-row">
       <Card className="flex-1 @container/card">
-        <CardHeader className="relative">
-          <CardTitle>Total Comprado por Usuário</CardTitle>
+        <CardHeader>
+          <CardTitle>Total Comprado ao longo do tempo</CardTitle>
           <CardDescription>
-            <span className="@[540px]/card:block hidden">
-              Total comprado por usuário
-            </span>
-            <span className="@[540px]/card:hidden">Comprado by user</span>
+            Evolução do total comprado por data de compra
           </CardDescription>
           <div className="absolute right-4 top-4">
             <ToggleGroup
               type="single"
-              value={userRange}
-              onValueChange={setUserRange}
+              value={timeRange}
+              onValueChange={setTimeRange}
               variant="outline"
               className="@[767px]/card:flex hidden"
             >
-              <ToggleGroupItem value="all" className="h-8 px-2.5">
+              <ToggleGroupItem value="12m" className="h-8 px-2.5">
                 Últimos 12 meses
               </ToggleGroupItem>
-              <ToggleGroupItem value="top3" className="h-8 px-2.5">
+              <ToggleGroupItem value="3m" className="h-8 px-2.5">
                 Últimos 3 meses
               </ToggleGroupItem>
-              <ToggleGroupItem value="top3" className="h-8 px-2.5">
-                Mês Vigente
+              <ToggleGroupItem value="1m" className="h-8 px-2.5">
+                Mês vigente
               </ToggleGroupItem>
             </ToggleGroup>
-            <Select value={userRange} onValueChange={setUserRange}>
+            <Select value={timeRange} onValueChange={setTimeRange}>
               <SelectTrigger
                 className="@[767px]/card:hidden flex w-40"
                 aria-label="Select a value"
               >
-                <SelectValue placeholder="Todos" />
+                <SelectValue placeholder="Last 3 months" />
               </SelectTrigger>
               <SelectContent className="rounded-xl">
-                <SelectItem value="all" className="rounded-lg">
+                <SelectItem value="12m" className="rounded-lg">
                   Últimos 12 meses
                 </SelectItem>
-                <SelectItem value="last3" className="rounded-lg">
+                <SelectItem value="3m" className="rounded-lg">
                   Últimos 3 meses
                 </SelectItem>
-                <SelectItem value="current" className="rounded-lg">
-                  Mês Vigente
+                <SelectItem value="1m" className="rounded-lg">
+                  Mês vigente
                 </SelectItem>
               </SelectContent>
             </Select>
@@ -121,72 +159,97 @@ export function ChartAreaInteractive() {
             config={chartConfig}
             className="aspect-auto h-[250px] w-full"
           >
-            <BarChart data={filteredData}>
+            <AreaChart data={compradoData}>
+              <defs>
+                <linearGradient id="fillComprado" x1="0" y1="0" x2="0" y2="1">
+                  <stop
+                    offset="5%"
+                    stopColor="var(--color-desktop)"
+                    stopOpacity={1.0}
+                  />
+                  <stop
+                    offset="95%"
+                    stopColor="var(--color-desktop)"
+                    stopOpacity={0.1}
+                  />
+                </linearGradient>
+              </defs>
               <CartesianGrid vertical={false} />
-              <XAxis dataKey="user" tickLine={false} axisLine={false} />
+              <XAxis
+                dataKey="user"
+                tickLine={false}
+                axisLine={false}
+                tickMargin={8}
+                minTickGap={32}
+              />
+              <XAxis
+                dataKey="user"
+                tickLine={false}
+                axisLine={false}
+                tickMargin={8}
+                minTickGap={32}
+              />
               <YAxis />
               <ChartTooltip
                 cursor={false}
                 content={
                   <ChartTooltipContent
-                    labelFormatter={(value) => value}
+                    labelFormatter={value => value}
                     indicator="dot"
                   />
                 }
               />
-              <Bar
-                dataKey="comprado"
-                fill="var(--color-desktop)"
-                radius={[4, 4, 0, 0]}
-                barSize={40}
+              <Area
+                dataKey="value"
+                type="natural"
+                fill="url(#fillComprado)"
+                stroke="var(--color-desktop)"
+                stackId="a"
               />
-            </BarChart>
+            </AreaChart>
           </ChartContainer>
         </CardContent>
       </Card>
-      <Card className="@container/card flex-1">
-        <CardHeader className="relative">
-          <CardTitle>Total Liquidado por Usuário</CardTitle>
+      <Card className="flex-1 @container/card">
+        <CardHeader>
+          <CardTitle>Total Liquidado ao longo do tempo</CardTitle>
           <CardDescription>
-            <span className="@[540px]/card:block hidden">
-              Total liquidado por usuário
-            </span>
-            <span className="@[540px]/card:hidden">Liquidado by user</span>
+            Evolução do total liquidado por data de compra
           </CardDescription>
           <div className="absolute right-4 top-4">
             <ToggleGroup
               type="single"
-              value={userRange2}
-              onValueChange={setUserRange2}
+              value={timeRange}
+              onValueChange={setTimeRange}
               variant="outline"
               className="@[767px]/card:flex hidden"
             >
-              <ToggleGroupItem value="all" className="h-8 px-2.5">
+              <ToggleGroupItem value="12m" className="h-8 px-2.5">
                 Últimos 12 meses
               </ToggleGroupItem>
-              <ToggleGroupItem value="top3" className="h-8 px-2.5">
+              <ToggleGroupItem value="3m" className="h-8 px-2.5">
                 Últimos 3 meses
               </ToggleGroupItem>
-              <ToggleGroupItem value="top3" className="h-8 px-2.5">
-                Mês Vigente
+              <ToggleGroupItem value="1m" className="h-8 px-2.5">
+                Mês vigente
               </ToggleGroupItem>
             </ToggleGroup>
-            <Select value={userRange2} onValueChange={setUserRange2}>
+            <Select value={timeRange} onValueChange={setTimeRange}>
               <SelectTrigger
                 className="@[767px]/card:hidden flex w-40"
                 aria-label="Select a value"
               >
-                <SelectValue placeholder="Todos" />
+                <SelectValue placeholder="Last 3 months" />
               </SelectTrigger>
               <SelectContent className="rounded-xl">
-                <SelectItem value="all" className="rounded-lg">
+                <SelectItem value="12m" className="rounded-lg">
                   Últimos 12 meses
                 </SelectItem>
-                <SelectItem value="last3" className="rounded-lg">
+                <SelectItem value="3m" className="rounded-lg">
                   Últimos 3 meses
                 </SelectItem>
-                <SelectItem value="current" className="rounded-lg">
-                  Mês Vigente
+                <SelectItem value="1m" className="rounded-lg">
+                  Mês vigente
                 </SelectItem>
               </SelectContent>
             </Select>
@@ -197,26 +260,47 @@ export function ChartAreaInteractive() {
             config={chartConfig}
             className="aspect-auto h-[250px] w-full"
           >
-            <BarChart data={filteredData2}>
+            <AreaChart data={liquidadoData}>
+              <defs>
+                <linearGradient id="fillLiquidado" x1="0" y1="0" x2="0" y2="1">
+                  <stop
+                    offset="5%"
+                    stopColor="var(--color-mobile)"
+                    stopOpacity={0.8}
+                  />
+                  <stop
+                    offset="95%"
+                    stopColor="var(--color-mobile)"
+                    stopOpacity={0.1}
+                  />
+                </linearGradient>
+              </defs>
               <CartesianGrid vertical={false} />
-              <XAxis dataKey="user" tickLine={false} axisLine={false} />
+              <XAxis
+                dataKey="user"
+                tickLine={false}
+                axisLine={false}
+                tickMargin={8}
+                minTickGap={32}
+              />
               <YAxis />
               <ChartTooltip
                 cursor={false}
                 content={
                   <ChartTooltipContent
-                    labelFormatter={(value) => value}
+                    labelFormatter={value => value}
                     indicator="dot"
                   />
                 }
               />
-              <Bar
-                dataKey="liquidado"
-                fill="var(--color-mobile)"
-                radius={[4, 4, 0, 0]}
-                barSize={40}
+              <Area
+                dataKey="value"
+                type="natural"
+                fill="url(#fillLiquidado)"
+                stroke="var(--color-mobile)"
+                stackId="a"
               />
-            </BarChart>
+            </AreaChart>
           </ChartContainer>
         </CardContent>
       </Card>
