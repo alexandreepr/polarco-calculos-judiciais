@@ -2,14 +2,14 @@ services:
   frontend:
     build:
       context: ./frontend
+      dockerfile: Dockerfile
     ports:
       - "3000:3000"
     volumes:
-      - .:/frontend/app
-      # - /app/node_modules
+      - ./frontend:/app
     environment:
       - NODE_ENV=development
-      - WATCHPACK_POLLING=true
+    command: pnpm dev --host
 
   backend:
     build:

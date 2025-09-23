@@ -2,7 +2,7 @@ from typing import Any, Dict, Optional
 import uuid
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from models.audit_log import AuditLog
+from ..models.audit_log import AuditLog
 
 async def create_audit_log(
     db: AsyncSession,

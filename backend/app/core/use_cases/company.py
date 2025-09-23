@@ -4,11 +4,12 @@ from fastapi import HTTPException, status, BackgroundTasks, Request, Response
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.exc import IntegrityError
-from backend.app.adapters.orm.models.company import Company
-from backend.app.adapters.orm.models.user import User
-from backend.app.adapters.orm.security.audit import create_audit_log
-from backend.app.core.value_objects.company import CompanyCreate, CompanyUpdate
 from datetime import datetime, timezone
+
+from app.adapters.orm.models.company import Company
+from app.adapters.orm.models.user import User
+from app.adapters.orm.security.audit import create_audit_log
+from app.core.value_objects.company import CompanyCreate, CompanyUpdate
 
 
 async def create_company_use_case(

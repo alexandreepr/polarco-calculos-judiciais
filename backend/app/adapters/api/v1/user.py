@@ -11,8 +11,7 @@ from app.core.use_cases.user import (
 )
 from app.adapters.orm.security.permissions import require_permission
 from app.adapters.orm.database import get_async_db
-from backend.app.core.value_objects.update_user import UserUpdate
-from backend.app.core.value_objects.user import UserCreate, UserResponse
+from app.core.value_objects import UserCreate, UserResponse, UserUpdate
 
 user_router = APIRouter(prefix="/users", tags=["User Management"])
 
@@ -22,9 +21,9 @@ async def create_user(
     background_tasks: BackgroundTasks,
     request: Request,
     db: AsyncSession = Depends(get_async_db),
-    current_user: User = Depends(require_permission("users", "create"))
+    # current_user: User = Depends(require_permission("users", "create"))
 ):
-    db_user = await create_user_use_case(db, user, current_user, background_tasks, request)
+    db_user = await create_user_use_case(db, user, background_tasks, request)
     return db_user
 
 @user_router.get("/", response_model=List[UserResponse])

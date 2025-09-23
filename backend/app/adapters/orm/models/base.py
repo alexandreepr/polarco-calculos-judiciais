@@ -1,3 +1,4 @@
+from typing import Optional
 from sqlalchemy.orm import DeclarativeBase
 
 
@@ -16,5 +17,5 @@ class Base(DeclarativeBase):
         nullable=False
     )
     created_at: Mapped[datetime] = mapped_column(TIMESTAMP, server_default=func.now())
-    deleted_at: Mapped[datetime | None] = mapped_column(TIMESTAMP, nullable=True)
+    deleted_at: Mapped[Optional[datetime]] = mapped_column(TIMESTAMP, nullable=True)
     is_deleted: Mapped[bool] = mapped_column(Boolean, default=False)

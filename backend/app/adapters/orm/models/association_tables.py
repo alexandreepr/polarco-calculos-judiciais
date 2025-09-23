@@ -1,7 +1,7 @@
 from sqlalchemy import ForeignKey, Table, Column
 from sqlalchemy.dialects.postgresql import UUID
 
-from base import Base
+from .base import Base
 
 user_roles = Table(
     'user_roles', 

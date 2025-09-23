@@ -1,7 +1,8 @@
 from sqlalchemy import String, Boolean, DateTime, ForeignKey
 import uuid
 from sqlalchemy.orm import relationship, Mapped, mapped_column
-from backend.app.adapters.orm.models.base import Base
+
+from app.adapters.orm.models.base import Base
 
 class RefreshToken(Base):
     __tablename__ = 'refresh_tokens'

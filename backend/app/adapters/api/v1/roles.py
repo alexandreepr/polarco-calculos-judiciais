@@ -2,10 +2,10 @@ from fastapi import Depends, status, Request, BackgroundTasks
 from fastapi.routing import APIRouter
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from backend.app.adapters.orm.database import get_async_db
-from backend.app.adapters.orm.models.user import User
-from backend.app.adapters.orm.security.permissions import require_permission
-from backend.app.core.value_objects.role import RoleCreate, RoleResponse
+from app.adapters.orm.database import get_async_db
+from app.adapters.orm.models.user import User
+from app.adapters.orm.security.permissions import require_permission
+from app.core.value_objects.role import RoleCreate, RoleResponse
 from app.core.use_cases.role import create_role_use_case
 
 role_router = APIRouter(prefix="/roles", tags=["Role Management"])

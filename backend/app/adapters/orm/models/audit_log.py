@@ -4,7 +4,6 @@ from typing import Any, Dict, Optional
 from sqlalchemy import ForeignKey, String, JSON, Integer, TIMESTAMP, func
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
-from .user import User
 from .base import Base
 
 class AuditLog(Base):
@@ -19,3 +18,5 @@ class AuditLog(Base):
     timestamp: Mapped[datetime] = mapped_column(TIMESTAMP, server_default=func.now())
 
     user: Mapped[Optional["User"]] = relationship(back_populates="audit_logs")
+
+from .user import User

@@ -1,11 +1,21 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from contextlib import asynccontextmanager
 
-from .core.config import settings
-from .core.logger import logger
-from .api import router as api_router
+from app.adapters.orm.models.base import Base
+from app.adapters.orm.database import async_engine
+from .infrastructure.config import settings
+from .infrastructure.logger import logger
+from .adapters.api import router as api_router
 
-app = FastAPI()
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    async with async_engine.begin() as conn:
+        await conn.run_sync(Base.metadata.create_all)
+    logger.info("Database tables created (if not exist)")
+    yield
+
+app = FastAPI(lifespan=lifespan)
 
 origins = settings.get("ALLOWED_ORIGINS")
 

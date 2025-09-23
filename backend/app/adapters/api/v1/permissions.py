@@ -3,10 +3,10 @@ from fastapi.routing import APIRouter
 from sqlalchemy.ext.asyncio import AsyncSession
 from typing import List
 
-from backend.app.adapters.orm.database import get_async_db
-from backend.app.adapters.orm.models.user import User
-from backend.app.adapters.orm.security.permissions import require_permission
-from backend.app.core.value_objects.permission import PermissionCreate, PermissionResponse
+from app.adapters.orm.database import get_async_db
+from app.adapters.orm.models.user import User
+from app.adapters.orm.security.permissions import require_permission
+from app.core.value_objects.permission import PermissionCreate, PermissionResponse
 from app.core.use_cases.permission import (
     create_permission_use_case,
     get_permissions_use_case,

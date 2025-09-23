@@ -5,10 +5,11 @@ from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 from datetime import datetime, timedelta, timezone
 from jose import JWTError, jwt
+
 from app.core.value_objects.token import Token
-from backend.app.adapters.orm.models.refresh_token import RefreshToken
-from backend.app.adapters.orm.security.auth import ACCESS_TOKEN_EXPIRE_MINUTES, ALGORITHM, SECRET_KEY, authenticate_user, create_access_token, create_refresh_token
-from backend.app.adapters.orm.security.audit import create_audit_log
+from app.adapters.orm.models.refresh_token import RefreshToken
+from app.adapters.orm.security.auth import ACCESS_TOKEN_EXPIRE_MINUTES, ALGORITHM, SECRET_KEY, authenticate_user, create_access_token, create_refresh_token
+from app.adapters.orm.security.audit import create_audit_log
 
 async def login_for_access_token_use_case(
     db: AsyncSession,
