@@ -27,6 +27,7 @@ async def create_company_use_case(
         db_company.cnpj = company.cnpj
         db_company.name = company.name
         db_company.members = [current_user]
+        db_company.created_by = current_user
         
         db.add(db_company)
         

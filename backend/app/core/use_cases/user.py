@@ -31,6 +31,7 @@ async def create_user_use_case(db: AsyncSession, user: UserCreate, background_ta
             create_audit_log,
             db=db,
             action="create",
+            user_id=db_user.id,
             resource_type="users",
             resource_id=db_user.id,
             details={"username": user.username, "email": user.email},

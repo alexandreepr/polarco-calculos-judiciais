@@ -21,6 +21,8 @@ class User(Base):
     groups: Mapped[List["Group"]] = relationship(secondary=user_groups, back_populates="users")
     audit_logs: Mapped[List["AuditLog"]] = relationship(back_populates="user")
     companies: Mapped[List["Company"]] = relationship(secondary=company_user, back_populates="members")
+    is_active: Mapped[bool] = mapped_column(default=True)
+    is_superuser: Mapped[bool] = mapped_column(default=False)
 
 from .company import Company
 from .role import Role
