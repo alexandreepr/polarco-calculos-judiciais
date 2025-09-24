@@ -1,18 +1,31 @@
+import { useForm } from "react-hook-form";
 import { cn } from "@/components/utils"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
+import { useAuth } from "@/common/AuthProvider"
 
 export function LoginForm({
   className,
   ...props
 }: React.ComponentProps<"div">) {
+  const { login } = useAuth();
+  const { register, handleSubmit } = useForm<{ username: string; password: string }>();
+
+  const onSubmit = async (data: { username: string; password: string }) => {
+    try {
+      await login(data.username, data.password);
+    } catch (err) {
+      console.log("LOGIN ERROR:", err);
+    }
+  };
+
   return (
     <div className={cn("flex flex-col gap-6", className)} {...props}>
       <Card className="overflow-hidden">
         <CardContent className="grid p-0 md:grid-cols-2">
-          <form className="p-6 md:p-8">
+          <form className="p-6 md:p-8" onSubmit={handleSubmit(onSubmit)}>
             <div className="flex flex-col gap-6">
               <div className="flex flex-col items-center text-center">
                 <h1 className="text-2xl font-bold">Welcome back</h1>
@@ -23,9 +36,10 @@ export function LoginForm({
               <div className="grid gap-2">
                 <Label htmlFor="email">Email</Label>
                 <Input
-                  id="email"
-                  type="email"
-                  placeholder="m@example.com"
+                  id="username"
+                  type="username"
+                  placeholder="polarco"
+                  {...register("username")}
                   required
                 />
               </div>
@@ -39,7 +53,7 @@ export function LoginForm({
                     Forgot your password?
                   </a>
                 </div>
-                <Input id="password" type="password" required />
+                <Input id="password" type="password" {...register("password")} required />
               </div>
               <Button type="submit" className="w-full">
                 Login
