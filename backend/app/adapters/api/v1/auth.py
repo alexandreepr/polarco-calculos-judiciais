@@ -4,7 +4,7 @@ from fastapi.routing import APIRouter
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.value_objects.token import TokenResponse
-from backend.app.adapters.orm.database import get_async_db
+from app.adapters.orm.database import get_async_db
 from app.core.use_cases.auth import login_for_access_token_use_case, refresh_access_token_use_case, revoke_refresh_token
 
 auth_router = APIRouter(prefix="/auth", tags=["Authentication"])

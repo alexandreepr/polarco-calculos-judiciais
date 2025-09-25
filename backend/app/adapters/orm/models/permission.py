@@ -2,11 +2,8 @@ from typing import Any, Dict, List, Optional
 from sqlalchemy import String, JSON, Text
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
-from role import Role
-from user import User
-from base import Base
-import uuid
-from association_tables import role_permissions, user_permissions
+from .base import Base
+from .association_tables import role_permissions, user_permissions
 
 
 class Permission(Base):
@@ -20,3 +17,6 @@ class Permission(Base):
 
     roles: Mapped[List["Role"]] = relationship(secondary=role_permissions, back_populates="permissions")
     users: Mapped[List["User"]] = relationship(secondary=user_permissions, back_populates="direct_permissions")
+
+from .role import Role
+from .user import User

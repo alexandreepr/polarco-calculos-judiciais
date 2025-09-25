@@ -3,14 +3,8 @@ from typing import List
 from sqlalchemy import String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
-from backend.app.adapters.orm.models.company import Company
-from base import Base
-import uuid
-from role import Role
-from permission import Permission
-from group import Group
-from audit_log import AuditLog
-from association_tables import user_groups, user_roles, user_permissions, company_user
+from .base import Base
+from .association_tables import user_groups, user_roles, user_permissions, company_user
 
 class User(Base):
 
@@ -27,3 +21,11 @@ class User(Base):
     groups: Mapped[List["Group"]] = relationship(secondary=user_groups, back_populates="users")
     audit_logs: Mapped[List["AuditLog"]] = relationship(back_populates="user")
     companies: Mapped[List["Company"]] = relationship(secondary=company_user, back_populates="members")
+    is_active: Mapped[bool] = mapped_column(default=True)
+    is_superuser: Mapped[bool] = mapped_column(default=False)
+
+from .company import Company
+from .role import Role
+from .permission import Permission
+from .audit_log import AuditLog
+from .group import Group

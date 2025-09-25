@@ -1,22 +1,26 @@
+import uuid
 from fastapi import BackgroundTasks, HTTPException, Request, status, Response
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy import select, update, delete
 from typing import Optional
 
-from app.adapters.orm.models.user import User
-from app.adapters.orm.security.auth import get_password_hash
-from backend.app.adapters.orm.security.audit import create_audit_log
-from backend.app.core.value_objects.update_user import UserUpdate
-from value_objects import UserCreate
+from ...adapters.orm.models.user import User
+from ...adapters.orm.security.auth import get_password_hash
+from ...adapters.orm.security import create_audit_log
+from ..value_objects import UserUpdate
+from ..value_objects import UserCreate
 
-async def create_user_use_case(db: AsyncSession, user: UserCreate, current_user: User, background_tasks: BackgroundTasks, request: Request) -> User:
+async def create_user_use_case(db: AsyncSession, user: UserCreate, background_tasks: BackgroundTasks, request: Request) -> User:
     try:
         hashed_password = get_password_hash(user.password)
         db_user = User(
+            id=uuid.uuid4(),
             username=user.username,
             email=user.email,
-            password_hash=hashed_password
+            password_hash=hashed_password,
+            first_name=user.first_name,
+            last_name=user.last_name,
         )
         db.add(db_user)
         await db.commit()
@@ -26,8 +30,8 @@ async def create_user_use_case(db: AsyncSession, user: UserCreate, current_user:
         background_tasks.add_task(
             create_audit_log,
             db=db,
-            user_id=current_user.id,
             action="create",
+            user_id=db_user.id,
             resource_type="users",
             resource_id=db_user.id,
             details={"username": user.username, "email": user.email},
@@ -35,7 +39,8 @@ async def create_user_use_case(db: AsyncSession, user: UserCreate, current_user:
         )
 
         return db_user
-    except IntegrityError:
+    except IntegrityError as e:
+        print("IntegrityError:", e)
         await db.rollback()
         raise HTTPException(
             status_code=status.HTTP_409_CONFLICT,

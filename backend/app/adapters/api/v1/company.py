@@ -2,10 +2,10 @@ from fastapi import APIRouter, Depends, status, Request, BackgroundTasks
 from sqlalchemy.ext.asyncio import AsyncSession
 from typing import List
 
-from backend.app.adapters.orm.database import get_async_db
-from backend.app.adapters.orm.models.user import User
-from backend.app.adapters.orm.security.permissions import require_permission
-from backend.app.core.value_objects.company import CompanyCreate, CompanyUpdate, CompanyResponse
+from app.adapters.orm.database import get_async_db
+from app.adapters.orm.models.user import User
+from app.adapters.orm.security.permissions import require_permission
+from app.core.value_objects.company import CompanyCreate, CompanyUpdate, CompanyResponse
 from app.core.use_cases.company import (
     create_company_use_case,
     get_companies_use_case,

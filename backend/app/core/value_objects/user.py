@@ -1,13 +1,15 @@
+import uuid
 from pydantic import BaseModel, EmailStr, field_validator, ConfigDict
 from datetime import datetime
 from typing import List
 
-from .group import GroupResponse
 from .role import RoleResponse
 
 class UserBase(BaseModel):
     username: str
     email: EmailStr
+    first_name: str
+    last_name: str
 
 class UserCreate(UserBase):
     password: str
@@ -24,11 +26,11 @@ class UserCreate(UserBase):
         return password
 
 class UserResponse(UserBase):
-    id: int
-    is_active: bool
-    created_at: datetime
+    id: uuid.UUID
 
     model_config = ConfigDict(from_attributes=True)
+
+from .group import GroupResponse
 
 class UserDetails(UserResponse):
     roles: List["RoleResponse"] = []

@@ -3,11 +3,11 @@ from sqlalchemy import delete, select, update
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.exc import IntegrityError
 
-from backend.app.adapters.orm.models.permission import Permission
-from backend.app.adapters.orm.models.role import Role
-from backend.app.adapters.orm.models.user import User
-from backend.app.adapters.orm.security.audit import create_audit_log
-from backend.app.core.value_objects.permission import PermissionCreate
+from app.adapters.orm.models.permission import Permission
+from app.adapters.orm.models.role import Role
+from app.adapters.orm.models.user import User
+from app.adapters.orm.security.audit import create_audit_log
+from app.core.value_objects.permission import PermissionCreate
 
 async def create_permission_use_case(
     permission: PermissionCreate,

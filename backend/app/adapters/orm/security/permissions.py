@@ -2,9 +2,9 @@ from datetime import datetime
 from typing import Any, Dict, Optional
 from fastapi import Depends, HTTPException, status, Request
 
-from models.user import User
+from ..models.user import User
 
-from auth import get_current_active_user
+from .auth import get_current_active_user
 
 
 # ABAC Permission verification
@@ -75,8 +75,8 @@ async def has_permission(
 # Permission dependency for FastAPI routes
 def require_permission(resource: str, action: str):
     async def permission_dependency(
-        current_user: User = Depends(get_current_active_user),
-        request: Request = Depends()
+        request: Request,
+        current_user: User = Depends(get_current_active_user)
     ):
         context: Dict[str, Any] = {
             "current_time": datetime.now().time(),

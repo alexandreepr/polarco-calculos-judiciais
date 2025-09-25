@@ -1,13 +1,12 @@
-FROM node:20.9.0-alpine
+FROM node:24-alpine
 
 WORKDIR /app
 
-COPY package.json .
-
-RUN npm install
-
 COPY . .
+
+RUN corepack enable && corepack prepare pnpm@latest --activate
+RUN pnpm install --frozen-lockfile
 
 EXPOSE 3000
 
-CMD ["npm", "run", "start:watch"]
+CMD ["pnpm", "dev", "--host"]

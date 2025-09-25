@@ -3,9 +3,6 @@ from sqlalchemy import String, Text
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from .base import Base
-import uuid
-from .role import Role
-from .user import User
 from .association_tables import user_groups, group_roles
 
 
@@ -17,3 +14,6 @@ class Group(Base):
 
     users: Mapped[List["User"]] = relationship(secondary=user_groups, back_populates="groups")
     roles: Mapped[List["Role"]] = relationship(secondary=group_roles, back_populates="groups")
+
+from .role import Role
+from .user import User

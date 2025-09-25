@@ -7,8 +7,8 @@ from passlib.context import CryptContext
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
 
-from backend.app.adapters.orm.database import get_async_db
-from backend.app.adapters.orm.models.user import User
+from ...orm.database import get_async_db
+from ...orm.models.user import User
 
 # Security configuration
 SECRET_KEY = "secret-key"
@@ -40,7 +40,7 @@ def create_refresh_token(data: Dict[str, Any], expires_delta: Optional[timedelta
     return jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
 
 # User authentication
-async def authenticate_user(db: AsyncSession, username: str, password: str) -> User | None:
+async def authenticate_user(db: AsyncSession, username: str, password: str) -> Optional[User]:
     stmt = select(User).where(User.username == username)
     result = await db.execute(stmt)
     user = result.scalars().first()

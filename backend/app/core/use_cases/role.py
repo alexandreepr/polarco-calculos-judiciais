@@ -2,10 +2,10 @@ from fastapi import HTTPException, status, BackgroundTasks, Request
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.exc import IntegrityError
 
-from backend.app.adapters.orm.models.role import Role
-from backend.app.adapters.orm.models.user import User
-from backend.app.adapters.orm.security.audit import create_audit_log
-from backend.app.core.value_objects.role import RoleCreate
+from app.adapters.orm.models.role import Role
+from app.adapters.orm.models.user import User
+from app.adapters.orm.security.audit import create_audit_log
+from app.core.value_objects.role import RoleCreate
 
 async def create_role_use_case(
     role: RoleCreate,

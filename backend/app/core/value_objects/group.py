@@ -1,8 +1,6 @@
 from pydantic import BaseModel, ConfigDict
 from typing import List, Optional
 
-from .role import RoleResponse
-from .user import UserResponse
 
 class GroupBase(BaseModel):
     name: str
@@ -15,6 +13,9 @@ class GroupResponse(GroupBase):
     id: int
 
     model_config = ConfigDict(from_attributes=True)
+
+from .role import RoleResponse
+from .user import UserResponse
 
 class GroupDetails(GroupResponse):
     users: List[UserResponse] = []
