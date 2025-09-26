@@ -10,6 +10,7 @@ from app.core.use_cases.company import (
     create_company_use_case,
     get_companies_use_case,
     get_company_use_case,
+    get_my_companies_use_case,
     update_company_use_case,
     delete_company_use_case
 )
@@ -21,8 +22,9 @@ async def create_company(
     company: CompanyCreate,
     background_tasks: BackgroundTasks,
     request: Request,
+    current_user: User,
     db: AsyncSession = Depends(get_async_db),
-    current_user: User = Depends(require_permission("companies", "create"))
+    # current_user: User = Depends(require_permission("companies", "create"))
 ):
     return await create_company_use_case(company, background_tasks, request, db, current_user)
 
@@ -63,3 +65,12 @@ async def delete_company(
     current_user: User = Depends(require_permission("companies", "delete"))
 ):
     return await delete_company_use_case(company_id, background_tasks, request, db, current_user)
+
+@company_router.get("/me", response_model=List[CompanyResponse])
+async def get_companies(
+    skip: int = 0,
+    limit: int = 100,
+    db: AsyncSession = Depends(get_async_db),
+    current_user: User = Depends(require_permission("companies", "list"))
+):
+    return await get_my_companies_use_case(db, skip, limit, current_user)

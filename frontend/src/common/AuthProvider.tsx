@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState } from "react";
+import React, { createContext, useContext, useEffect, useState } from "react";
 import { useNavigate } from "@tanstack/react-router";
 
 interface AuthContextType {
@@ -24,13 +24,17 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       credentials: "include",
     });
 
-    if (!res.ok) throw new Error("Login failed");
+    if (!res.ok) {
+      throw new Error("Login failed");
+    }
+
     const data = await res.json() as { access_token: string, token_type: string };
+    
     setAccessToken(data.access_token);
-    console.log(data)
-    navigate({ to: "/dashboard" });
+    navigate({ to: "/companies" });
   };
 
+  
   const logout = async () => {
     const res = await fetch("http://localhost:8000/api/v1/auth/logout", {
       method: "POST",
@@ -39,13 +43,33 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       },
       credentials: "include",
     });
-
+    
     if (!res.ok) throw new Error("Logout failed");
   
     setAccessToken(null);
 
     navigate({ to: "/login" });
   };
+  // Try to refresh token on mount
+  useEffect(() => {
+    const tryRefresh = async () => {
+      try {
+        const res = await fetch("http://localhost:8000/api/v1/auth/refresh", {
+          method: "POST",
+          credentials: "include",
+        });
+
+        if (res.ok) {
+          const data = await res.json() as { access_token: string, token_type: string };
+
+          setAccessToken(data.access_token);
+        }
+      } catch {
+        setAccessToken(null);
+      }
+    };
+    tryRefresh();
+  }, []);
 
   return (
     <AuthContext.Provider value={{ accessToken, login, logout }}>

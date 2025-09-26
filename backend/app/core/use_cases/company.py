@@ -9,7 +9,7 @@ from datetime import datetime, timezone
 from app.adapters.orm.models.company import Company
 from app.adapters.orm.models.user import User
 from app.adapters.orm.security.audit import create_audit_log
-from app.core.value_objects.company import CompanyCreate, CompanyUpdate
+from app.core.value_objects.company import CompanyCreate, CompanyResponse, CompanyUpdate
 
 
 async def create_company_use_case(
@@ -61,6 +61,18 @@ async def get_companies_use_case(
     result = await db.execute(query)
 
     return result.scalars().all()
+
+async def get_my_companies_use_case(
+    db: AsyncSession,
+    skip: int = 0,
+    limit: int = 10,
+    current_user: User = None,
+) -> list[CompanyResponse]:
+    await db.refresh(current_user)  # Ensure relationships are loaded
+
+    companies = current_user.companies[skip : skip + limit]
+
+    return [CompanyResponse.model_validate(company) for company in companies]
 
 async def get_company_use_case(
     company_id: int,
