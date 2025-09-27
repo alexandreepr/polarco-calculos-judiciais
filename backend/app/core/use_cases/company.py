@@ -68,7 +68,7 @@ async def get_my_companies_use_case(
     limit: int = 10,
     current_user: User = None,
 ) -> list[CompanyResponse]:
-    await db.refresh(current_user)  # Ensure relationships are loaded
+    await db.refresh(current_user, attribute_names=["companies"])
 
     companies = current_user.companies[skip : skip + limit]
 

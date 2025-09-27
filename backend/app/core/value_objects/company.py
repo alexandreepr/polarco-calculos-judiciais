@@ -1,5 +1,5 @@
 import uuid
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, ConfigDict, Field
 from typing import List, Optional
 
 class CompanyBase(BaseModel):
@@ -16,10 +16,12 @@ class CompanyUpdate(BaseModel):
 
 
 class CompanyResponse(BaseModel):
-    id: int
+    id: uuid.UUID
     name: str
     cnpj: str
     is_active: bool
+
+    model_config = ConfigDict(from_attributes=True)
 
 class CompanyDetail(CompanyResponse):
     members: List[int] = []

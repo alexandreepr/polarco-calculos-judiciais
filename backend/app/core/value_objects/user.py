@@ -10,6 +10,8 @@ class UserBase(BaseModel):
     email: EmailStr
     first_name: str
     last_name: str
+    is_active: bool
+    is_superuser: bool
 
 class UserCreate(UserBase):
     password: str
