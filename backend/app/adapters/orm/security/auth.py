@@ -4,8 +4,9 @@ from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
 from jose import JWTError, jwt
 from passlib.context import CryptContext
-from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
+from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import selectinload
 
 from ...orm.database import get_async_db
 from ...orm.models.user import User
@@ -41,7 +42,16 @@ def create_refresh_token(data: Dict[str, Any], expires_delta: Optional[timedelta
 
 # User authentication
 async def authenticate_user(db: AsyncSession, username: str, password: str) -> Optional[User]:
-    stmt = select(User).where(User.username == username)
+    stmt = (
+        select(User)
+        .options(
+            selectinload(User.direct_permissions),
+            selectinload(User.roles),
+            selectinload(User.groups),
+            selectinload(User.companies),
+        )
+        .where(User.username == username)
+    )
     result = await db.execute(stmt)
     user = result.scalars().first()
 
@@ -69,7 +79,16 @@ async def get_current_user(
     except JWTError:
         raise credentials_exception
 
-    stmt = select(User).where(User.username == username)
+    stmt = (
+        select(User)
+        .options(
+            selectinload(User.direct_permissions),
+            selectinload(User.roles),
+            selectinload(User.groups),
+            selectinload(User.companies),
+        )
+        .where(User.username == username)
+    )
     result = await db.execute(stmt)
     user = result.scalars().first()
 

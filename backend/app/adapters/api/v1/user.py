@@ -24,7 +24,7 @@ async def create_user(
     # current_user: User = Depends(require_permission("users", "create"))
 ):
     db_user = await create_user_use_case(db, user, background_tasks, request)
-    return db_user
+    return UserResponse.model_validate(db_user)
 
 @user_router.get("/", response_model=List[UserResponse])
 async def get_users(
@@ -34,7 +34,7 @@ async def get_users(
     current_user: User = Depends(require_permission("users", "list"))
 ):
     users = await get_users_use_case(db, skip, limit)
-    return users
+    return [UserResponse.model_validate(u) for u in users]
 
 @user_router.get("/{user_id}", response_model=UserResponse)
 async def get_user(
@@ -43,7 +43,7 @@ async def get_user(
     current_user: User = Depends(require_permission("users", "view"))
 ):
     db_user = await get_user_use_case(user_id, db)
-    return db_user
+    return UserResponse.model_validate(db_user)
 
 @user_router.put("/{user_id}", response_model=UserResponse)
 async def update_user(
@@ -55,7 +55,7 @@ async def update_user(
     current_user: User = Depends(require_permission("users", "update"))
 ):
     db_user = await update_user_use_case(user_id, user_update, background_tasks, current_user, db, request)
-    return db_user
+    return UserResponse.model_validate(db_user)
 
 @user_router.delete("/{user_id}", status_code=status.HTTP_204_NO_CONTENT)
 async def delete_user(
