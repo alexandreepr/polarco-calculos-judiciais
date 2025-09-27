@@ -35,8 +35,11 @@ export function CreateCompanyForm({ onSuccess }: CreateCompanyFormProps) {
     if (res.ok) {
       setName("");
       setCnpj("");
-      onSuccess()
-      navigate({ to: "/dashboard" });
+      onSuccess();
+      
+      const data: any = await res.json();
+      
+      navigate({ to: `/u/company/${data.id}/dashboard` });
     } else {
       const data: any = await res.json().catch(() => ({}));
       setError(data.detail || "Erro ao criar empresa");

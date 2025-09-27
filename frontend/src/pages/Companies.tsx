@@ -7,10 +7,12 @@ import { Company } from "@/types/company";
 import { CreateCompanyForm } from "@/components/forms/CreateCompanyForm";
 import { Avatar } from "@radix-ui/react-avatar";
 import { useAuth } from "@/common/AuthProvider";
+import { useNavigate } from "@tanstack/react-router";
 
 export function Companies() {
   const {accessToken} = useAuth()
   const [showCreate, setShowCreate] = useState(false);
+  const navigate = useNavigate()
 
   // Fetch companies the user is a member of
   const { data: companies = [], isLoading } = useQuery<Company[]>({
@@ -50,9 +52,8 @@ export function Companies() {
             </Avatar>
             <div className="flex-1">
               <div className="text-lg font-semibold">{company.name}</div>
-              {/* Add more company info here if needed */}
             </div>
-            <Button variant="outline">Selecionar</Button>
+            <Button variant="outline" onClick={() => navigate({ to: `/u/company/${company.id}/dashboard` })}>Selecionar</Button>
           </Card>
         ))}
       </div>

@@ -61,6 +61,14 @@ async def get_user_use_case(user_id: int, db: AsyncSession):
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
     return db_user
 
+async def get_user_me_use_case(user_id: int, db: AsyncSession) -> User:
+    stmt = select(User).where(User.id == user_id)
+    result = await db.execute(stmt)
+    db_user = result.scalars().first()
+
+    if db_user is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
+    return db_user
 
 async def update_user_use_case(
     user_id: int,
