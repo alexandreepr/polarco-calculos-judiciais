@@ -1,6 +1,5 @@
 import * as React from "react"
 import {
-  ArrowUpCircleIcon,
   CalendarDaysIcon,
   CameraIcon,
   FileCodeIcon,
@@ -29,115 +28,124 @@ import {
   SidebarMenuItem,
 } from "@/components/ui/sidebar"
 import { Avatar, AvatarImage } from "@/components/ui/avatar"
-
-const data = {
-  user: {
-    name: "shadcn",
-    email: "m@example.com",
-    avatar: "/avatars/shadcn.jpg",
-  },
-  navMain: [
-    {
-      title: "Dashboard",
-      url: "#",
-      icon: LayoutDashboardIcon,
-    },
-    {
-      title: "Processos",
-      url: "#",
-      icon: ScaleIcon,
-    },
-    {
-      title: "Agenda",
-      url: "#",
-      icon: CalendarDaysIcon,
-    },
-    {
-      title: "Despesas",
-      url: "#",
-      icon: BanknoteArrowDownIcon,
-    },
-    {
-      title: "Relatórios",
-      url: "#",
-      icon: FileIcon,
-    },
-  ],
-  navClouds: [
-    {
-      title: "Capture",
-      icon: CameraIcon,
-      isActive: true,
-      url: "#",
-      items: [
-        {
-          title: "Active Proposals",
-          url: "#",
-        },
-        {
-          title: "Archived",
-          url: "#",
-        },
-      ],
-    },
-    {
-      title: "Proposal",
-      icon: FileTextIcon,
-      url: "#",
-      items: [
-        {
-          title: "Active Proposals",
-          url: "#",
-        },
-        {
-          title: "Archived",
-          url: "#",
-        },
-      ],
-    },
-    {
-      title: "Prompts",
-      icon: FileCodeIcon,
-      url: "#",
-      items: [
-        {
-          title: "Active Proposals",
-          url: "#",
-        },
-        {
-          title: "Archived",
-          url: "#",
-        },
-      ],
-    },
-  ],
-  navSecondary: [
-    {
-      title: "Settings",
-      url: "#",
-      icon: SettingsIcon,
-    },
-    {
-      title: "Get Help",
-      url: "#",
-      icon: HelpCircleIcon,
-    },
-    {
-      title: "Search",
-      url: "#",
-      icon: SearchIcon,
-    },
-  ],
-  documents: [
-    {
-      name: "FAQ | Treinamento",
-      url: "#",
-      icon: CircleQuestionMarkIcon,
-    },
-  ],
-}
+import { useCompany } from "@/common/CompanyProvider"
+import { useAuth } from "@/common/AuthProvider"
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+  const { currentCompany } = useCompany();
+  const { currentUser } = useAuth();
+  
+  if (!currentCompany || !currentUser){
+    return "Error"
+  }
+
+  const data = {
+    user: {
+      name: `${currentUser.first_name} ${currentUser?.last_name}`,
+      email: currentUser.email,
+      avatar: "/avatars/shadcn.jpg",
+    },
+    navMain: [
+      {
+        title: "Visão Geral",
+        url: `/u/company/${currentCompany.id}/dashboard`,
+        icon: LayoutDashboardIcon,
+      },
+      {
+        title: "Processos",
+        url: `/u/company/${currentCompany.id}/legal-cases`,
+        icon: ScaleIcon,
+      },
+      {
+        title: "Agenda",
+        url: "#",
+        icon: CalendarDaysIcon,
+      },
+      {
+        title: "Despesas",
+        url: "#",
+        icon: BanknoteArrowDownIcon,
+      },
+      {
+        title: "Relatórios",
+        url: "#",
+        icon: FileIcon,
+      },
+    ],
+    navClouds: [
+      {
+        title: "Capture",
+        icon: CameraIcon,
+        isActive: true,
+        url: "#",
+        items: [
+          {
+            title: "Active Proposals",
+            url: "#",
+          },
+          {
+            title: "Archived",
+            url: "#",
+          },
+        ],
+      },
+      {
+        title: "Proposal",
+        icon: FileTextIcon,
+        url: "#",
+        items: [
+          {
+            title: "Active Proposals",
+            url: "#",
+          },
+          {
+            title: "Archived",
+            url: "#",
+          },
+        ],
+      },
+      {
+        title: "Prompts",
+        icon: FileCodeIcon,
+        url: "#",
+        items: [
+          {
+            title: "Active Proposals",
+            url: "#",
+          },
+          {
+            title: "Archived",
+            url: "#",
+          },
+        ],
+      },
+    ],
+    navSecondary: [
+      {
+        title: "Settings",
+        url: "#",
+        icon: SettingsIcon,
+      },
+      {
+        title: "Get Help",
+        url: "#",
+        icon: HelpCircleIcon,
+      },
+      {
+        title: "Search",
+        url: "#",
+        icon: SearchIcon,
+      },
+    ],
+    documents: [
+      {
+        name: "FAQ | Treinamento",
+        url: "#",
+        icon: CircleQuestionMarkIcon,
+      },
+    ],
+  }
+
   return (
     // Fix width
     <Sidebar collapsible="offcanvas" className="max-w-[200px]" {...props}>
@@ -152,7 +160,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                 <Avatar className="h-7 w-7">
                   <AvatarImage src="/src/assets/Logo_PBL_Fundo_Verde.jpg" alt="Logo" />
                 </Avatar>
-                <span className="text-base font-semibold">PBL Compra de Créditos Judiciais</span>
+                <span className="text-base font-semibold">{currentCompany.name}</span>
               </a>
             </SidebarMenuButton>
           </SidebarMenuItem>

@@ -1,4 +1,5 @@
 import { useForm } from "react-hook-form";
+import { useState } from "react";
 import { cn } from "@/components/utils"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
@@ -11,13 +12,24 @@ export function LoginForm({
   ...props
 }: React.ComponentProps<"div">) {
   const { login } = useAuth();
-  const { register, handleSubmit } = useForm<{ username: string; password: string }>();
+  const [ isSignup, setIsSignup ] = useState(false);
+  const { register, handleSubmit, setError, formState: { errors } } = useForm<{
+    username: string; 
+    password: string; 
+    email: string; 
+    first_name: string; 
+    last_name: string; 
+  }>();
 
   const onSubmit = async (data: { username: string; password: string }) => {
-    try {
-      await login(data.username, data.password);
-    } catch (err) {
-      console.log("LOGIN ERROR:", err);
+    if (isSignup) {
+      alert("Signup not implemented yet!");
+    } else {
+      try {
+        await login(data.username, data.password);
+      } catch (err: any) {
+        setError("username", { type: "manual", message: "Login failed" });
+      }
     }
   };
 
@@ -28,37 +40,117 @@ export function LoginForm({
           <form className="p-6 md:p-8" onSubmit={handleSubmit(onSubmit)}>
             <div className="flex flex-col gap-6">
               <div className="flex flex-col items-center text-center">
-                <h1 className="text-2xl font-bold">Welcome back</h1>
+                 <h1 className="text-2xl font-bold">
+                  {isSignup ? "Crie sua conta" : "Bem vindo"}
+                </h1>
                 <p className="text-balance text-muted-foreground">
-                  Login to your Acme Inc account
+                  {isSignup
+                    ? "Crie sua conta Polarco"
+                    : "Faça login na sua conta Polarco"}
                 </p>
               </div>
               <div className="grid gap-2">
-                <Label htmlFor="email">Email</Label>
+                <Label htmlFor="email">Username</Label>
                 <Input
                   id="username"
-                  type="username"
+                  type="text"
                   placeholder="polarco"
                   {...register("username")}
                   required
                 />
+                {errors.username && (
+                  <span className="text-red-500 text-xs">{errors.username.message}</span>
+                )}
               </div>
+              {isSignup && (
+                <>
+                  <div className="grid gap-2">
+                    <Label htmlFor="email">Email</Label>
+                    <Input
+                      id="email"
+                      type="email"
+                      placeholder="seu@email.com"
+                      {...register("email", { required: true })}
+                      required
+                    />
+                    {errors.email && (
+                      <span className="text-red-500 text-xs">{errors.email.message}</span>
+                    )}
+                  </div>
+                  <div className="grid gap-2">
+                    <Label htmlFor="first_name">Nome</Label>
+                    <Input
+                      id="first_name"
+                      type="text"
+                      placeholder="Seu nome"
+                      {...register("first_name", { required: true })}
+                      required
+                    />
+                    {errors.first_name && (
+                      <span className="text-red-500 text-xs">{errors.first_name.message}</span>
+                    )}
+                  </div>
+                  <div className="grid gap-2">
+                    <Label htmlFor="last_name">Sobrenome</Label>
+                    <Input
+                      id="last_name"
+                      type="text"
+                      placeholder="Seu sobrenome"
+                      {...register("last_name", { required: true })}
+                      required
+                    />
+                    {errors.last_name && (
+                      <span className="text-red-500 text-xs">{errors.last_name.message}</span>
+                    )}
+                  </div>
+                </>
+              )}
               <div className="grid gap-2">
                 <div className="flex items-center">
                   <Label htmlFor="password">Password</Label>
-                  <a
-                    href="#"
-                    className="ml-auto text-sm underline-offset-2 hover:underline"
-                  >
-                    Forgot your password?
-                  </a>
+                  {!isSignup && (
+                    <a
+                      href="#"
+                      className="ml-auto text-sm underline-offset-2 hover:underline"
+                    >
+                      Forgot your password?
+                    </a>
+                  )}
                 </div>
                 <Input id="password" type="password" {...register("password")} required />
+                {errors.password && (
+                  <span className="text-red-500 text-xs">{errors.password.message}</span>
+                )}
               </div>
               <Button type="submit" className="w-full">
-                Login
+                {isSignup ? "Create account" : "Login"}
               </Button>
-              <div className="relative text-center text-sm after:absolute after:inset-0 after:top-1/2 after:z-0 after:flex after:items-center after:border-t after:border-border">
+              <div className="text-center text-sm">
+                {isSignup ? (
+                  <>
+                    Já tem uma conta?{" "}
+                    <button
+                      type="button"
+                      className="underline underline-offset-4"
+                      onClick={() => setIsSignup(false)}
+                    >
+                      Entrar
+                    </button>
+                  </>
+                ) : (
+                  <>
+                    Não tem uma conta?{" "}
+                    <button
+                      type="button"
+                      className="underline underline-offset-4"
+                      onClick={() => setIsSignup(true)}
+                    >
+                      Criar conta
+                    </button>
+                  </>
+                )}
+              </div>
+              {/* <div className="relative text-center text-sm after:absolute after:inset-0 after:top-1/2 after:z-0 after:flex after:items-center after:border-t after:border-border">
                 <span className="relative z-10 bg-background px-2 text-muted-foreground">
                   Or continue with
                 </span>
@@ -91,18 +183,12 @@ export function LoginForm({
                   </svg>
                   <span className="sr-only">Login with Meta</span>
                 </Button>
-              </div>
-              <div className="text-center text-sm">
-                Don&apos;t have an account?{" "}
-                <a href="#" className="underline underline-offset-4">
-                  Sign up
-                </a>
-              </div>
+              </div> */}
             </div>
           </form>
           <div className="relative hidden bg-muted md:block">
             <img
-              src="/placeholder.svg"
+              src="/src/assets/polarco_2.png"
               alt="Image"
               className="absolute inset-0 h-full w-full object-cover dark:brightness-[0.2] dark:grayscale"
             />

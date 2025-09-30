@@ -4,8 +4,9 @@ from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
 from jose import JWTError, jwt
 from passlib.context import CryptContext
-from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
+from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import selectinload
 
 from ...orm.database import get_async_db
 from ...orm.models.user import User
@@ -41,7 +42,16 @@ def create_refresh_token(data: Dict[str, Any], expires_delta: Optional[timedelta
 
 # User authentication
 async def authenticate_user(db: AsyncSession, username: str, password: str) -> Optional[User]:
-    stmt = select(User).where(User.username == username)
+    stmt = (
+        select(User)
+        .options(
+            selectinload(User.direct_permissions),
+            selectinload(User.roles),
+            selectinload(User.groups),
+            selectinload(User.companies),
+        )
+        .where(User.username == username)
+    )
     result = await db.execute(stmt)
     user = result.scalars().first()
 
@@ -61,15 +71,27 @@ async def get_current_user(
         detail="Could not validate credentials",
         headers={"WWW-Authenticate": "Bearer"},
     )
+    
     try:
+        print("Token received:", token)
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        print("Decoded payload:", payload)
         username: Optional[str] = payload.get("sub")
         if username is None:
             raise credentials_exception
     except JWTError:
         raise credentials_exception
 
-    stmt = select(User).where(User.username == username)
+    stmt = (
+        select(User)
+        .options(
+            selectinload(User.direct_permissions),
+            selectinload(User.roles),
+            selectinload(User.groups),
+            selectinload(User.companies),
+        )
+        .where(User.username == username)
+    )
     result = await db.execute(stmt)
     user = result.scalars().first()
 

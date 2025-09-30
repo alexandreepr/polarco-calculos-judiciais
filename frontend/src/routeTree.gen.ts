@@ -8,19 +8,37 @@
 // You should NOT make any changes in this file as it will be overwritten.
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
+import { createFileRoute } from '@tanstack/react-router'
+
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as LoginRouteImport } from './routes/login'
-import { Route as DashboardRouteImport } from './routes/dashboard'
+import { Route as CompaniesRouteImport } from './routes/companies'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as UCompaniesRouteImport } from './routes/u/companies'
+import { Route as ULayoutRouteImport } from './routes/u/_layout'
+import { Route as UCompanyCompany_idDashboardRouteImport } from './routes/u/company/$company_id/dashboard'
+import { Route as UCompanyCompany_idLayoutRouteImport } from './routes/u/company/$company_id/_layout'
+import { Route as UCompanyCompany_idLegalCasesIndexRouteImport } from './routes/u/company/$company_id/legal-cases/index'
+import { Route as UCompanyCompany_idLegalCasesNewRouteImport } from './routes/u/company/$company_id/legal-cases/new'
 
+const URouteImport = createFileRoute('/u')()
+const UCompanyCompany_idRouteImport = createFileRoute(
+  '/u/company/$company_id',
+)()
+
+const URoute = URouteImport.update({
+  id: '/u',
+  path: '/u',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const LoginRoute = LoginRouteImport.update({
   id: '/login',
   path: '/login',
   getParentRoute: () => rootRouteImport,
 } as any)
-const DashboardRoute = DashboardRouteImport.update({
-  id: '/dashboard',
-  path: '/dashboard',
+const CompaniesRoute = CompaniesRouteImport.update({
+  id: '/companies',
+  path: '/companies',
   getParentRoute: () => rootRouteImport,
 } as any)
 const IndexRoute = IndexRouteImport.update({
@@ -28,39 +46,134 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const UCompaniesRoute = UCompaniesRouteImport.update({
+  id: '/companies',
+  path: '/companies',
+  getParentRoute: () => URoute,
+} as any)
+const ULayoutRoute = ULayoutRouteImport.update({
+  id: '/_layout',
+  getParentRoute: () => URoute,
+} as any)
+const UCompanyCompany_idRoute = UCompanyCompany_idRouteImport.update({
+  id: '/company/$company_id',
+  path: '/company/$company_id',
+  getParentRoute: () => URoute,
+} as any)
+const UCompanyCompany_idDashboardRoute =
+  UCompanyCompany_idDashboardRouteImport.update({
+    id: '/dashboard',
+    path: '/dashboard',
+    getParentRoute: () => UCompanyCompany_idRoute,
+  } as any)
+const UCompanyCompany_idLayoutRoute =
+  UCompanyCompany_idLayoutRouteImport.update({
+    id: '/_layout',
+    getParentRoute: () => UCompanyCompany_idRoute,
+  } as any)
+const UCompanyCompany_idLegalCasesIndexRoute =
+  UCompanyCompany_idLegalCasesIndexRouteImport.update({
+    id: '/legal-cases/',
+    path: '/legal-cases/',
+    getParentRoute: () => UCompanyCompany_idRoute,
+  } as any)
+const UCompanyCompany_idLegalCasesNewRoute =
+  UCompanyCompany_idLegalCasesNewRouteImport.update({
+    id: '/legal-cases/new',
+    path: '/legal-cases/new',
+    getParentRoute: () => UCompanyCompany_idRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/dashboard': typeof DashboardRoute
+  '/companies': typeof CompaniesRoute
   '/login': typeof LoginRoute
+  '/u': typeof ULayoutRoute
+  '/u/companies': typeof UCompaniesRoute
+  '/u/company/$company_id': typeof UCompanyCompany_idLayoutRoute
+  '/u/company/$company_id/dashboard': typeof UCompanyCompany_idDashboardRoute
+  '/u/company/$company_id/legal-cases/new': typeof UCompanyCompany_idLegalCasesNewRoute
+  '/u/company/$company_id/legal-cases': typeof UCompanyCompany_idLegalCasesIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/dashboard': typeof DashboardRoute
+  '/companies': typeof CompaniesRoute
   '/login': typeof LoginRoute
+  '/u': typeof ULayoutRoute
+  '/u/companies': typeof UCompaniesRoute
+  '/u/company/$company_id': typeof UCompanyCompany_idLayoutRoute
+  '/u/company/$company_id/dashboard': typeof UCompanyCompany_idDashboardRoute
+  '/u/company/$company_id/legal-cases/new': typeof UCompanyCompany_idLegalCasesNewRoute
+  '/u/company/$company_id/legal-cases': typeof UCompanyCompany_idLegalCasesIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
-  '/dashboard': typeof DashboardRoute
+  '/companies': typeof CompaniesRoute
   '/login': typeof LoginRoute
+  '/u': typeof URouteWithChildren
+  '/u/_layout': typeof ULayoutRoute
+  '/u/companies': typeof UCompaniesRoute
+  '/u/company/$company_id': typeof UCompanyCompany_idRouteWithChildren
+  '/u/company/$company_id/_layout': typeof UCompanyCompany_idLayoutRoute
+  '/u/company/$company_id/dashboard': typeof UCompanyCompany_idDashboardRoute
+  '/u/company/$company_id/legal-cases/new': typeof UCompanyCompany_idLegalCasesNewRoute
+  '/u/company/$company_id/legal-cases/': typeof UCompanyCompany_idLegalCasesIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/dashboard' | '/login'
+  fullPaths:
+    | '/'
+    | '/companies'
+    | '/login'
+    | '/u'
+    | '/u/companies'
+    | '/u/company/$company_id'
+    | '/u/company/$company_id/dashboard'
+    | '/u/company/$company_id/legal-cases/new'
+    | '/u/company/$company_id/legal-cases'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/dashboard' | '/login'
-  id: '__root__' | '/' | '/dashboard' | '/login'
+  to:
+    | '/'
+    | '/companies'
+    | '/login'
+    | '/u'
+    | '/u/companies'
+    | '/u/company/$company_id'
+    | '/u/company/$company_id/dashboard'
+    | '/u/company/$company_id/legal-cases/new'
+    | '/u/company/$company_id/legal-cases'
+  id:
+    | '__root__'
+    | '/'
+    | '/companies'
+    | '/login'
+    | '/u'
+    | '/u/_layout'
+    | '/u/companies'
+    | '/u/company/$company_id'
+    | '/u/company/$company_id/_layout'
+    | '/u/company/$company_id/dashboard'
+    | '/u/company/$company_id/legal-cases/new'
+    | '/u/company/$company_id/legal-cases/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  DashboardRoute: typeof DashboardRoute
+  CompaniesRoute: typeof CompaniesRoute
   LoginRoute: typeof LoginRoute
+  URoute: typeof URouteWithChildren
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/u': {
+      id: '/u'
+      path: '/u'
+      fullPath: '/u'
+      preLoaderRoute: typeof URouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/login': {
       id: '/login'
       path: '/login'
@@ -68,11 +181,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LoginRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/dashboard': {
-      id: '/dashboard'
-      path: '/dashboard'
-      fullPath: '/dashboard'
-      preLoaderRoute: typeof DashboardRouteImport
+    '/companies': {
+      id: '/companies'
+      path: '/companies'
+      fullPath: '/companies'
+      preLoaderRoute: typeof CompaniesRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/': {
@@ -82,13 +195,95 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/u/companies': {
+      id: '/u/companies'
+      path: '/companies'
+      fullPath: '/u/companies'
+      preLoaderRoute: typeof UCompaniesRouteImport
+      parentRoute: typeof URoute
+    }
+    '/u/_layout': {
+      id: '/u/_layout'
+      path: '/u'
+      fullPath: '/u'
+      preLoaderRoute: typeof ULayoutRouteImport
+      parentRoute: typeof URoute
+    }
+    '/u/company/$company_id': {
+      id: '/u/company/$company_id'
+      path: '/company/$company_id'
+      fullPath: '/u/company/$company_id'
+      preLoaderRoute: typeof UCompanyCompany_idRouteImport
+      parentRoute: typeof URoute
+    }
+    '/u/company/$company_id/dashboard': {
+      id: '/u/company/$company_id/dashboard'
+      path: '/dashboard'
+      fullPath: '/u/company/$company_id/dashboard'
+      preLoaderRoute: typeof UCompanyCompany_idDashboardRouteImport
+      parentRoute: typeof UCompanyCompany_idRoute
+    }
+    '/u/company/$company_id/_layout': {
+      id: '/u/company/$company_id/_layout'
+      path: '/company/$company_id'
+      fullPath: '/u/company/$company_id'
+      preLoaderRoute: typeof UCompanyCompany_idLayoutRouteImport
+      parentRoute: typeof UCompanyCompany_idRoute
+    }
+    '/u/company/$company_id/legal-cases/': {
+      id: '/u/company/$company_id/legal-cases/'
+      path: '/legal-cases'
+      fullPath: '/u/company/$company_id/legal-cases'
+      preLoaderRoute: typeof UCompanyCompany_idLegalCasesIndexRouteImport
+      parentRoute: typeof UCompanyCompany_idRoute
+    }
+    '/u/company/$company_id/legal-cases/new': {
+      id: '/u/company/$company_id/legal-cases/new'
+      path: '/legal-cases/new'
+      fullPath: '/u/company/$company_id/legal-cases/new'
+      preLoaderRoute: typeof UCompanyCompany_idLegalCasesNewRouteImport
+      parentRoute: typeof UCompanyCompany_idRoute
+    }
   }
 }
 
+interface UCompanyCompany_idRouteChildren {
+  UCompanyCompany_idLayoutRoute: typeof UCompanyCompany_idLayoutRoute
+  UCompanyCompany_idDashboardRoute: typeof UCompanyCompany_idDashboardRoute
+  UCompanyCompany_idLegalCasesNewRoute: typeof UCompanyCompany_idLegalCasesNewRoute
+  UCompanyCompany_idLegalCasesIndexRoute: typeof UCompanyCompany_idLegalCasesIndexRoute
+}
+
+const UCompanyCompany_idRouteChildren: UCompanyCompany_idRouteChildren = {
+  UCompanyCompany_idLayoutRoute: UCompanyCompany_idLayoutRoute,
+  UCompanyCompany_idDashboardRoute: UCompanyCompany_idDashboardRoute,
+  UCompanyCompany_idLegalCasesNewRoute: UCompanyCompany_idLegalCasesNewRoute,
+  UCompanyCompany_idLegalCasesIndexRoute:
+    UCompanyCompany_idLegalCasesIndexRoute,
+}
+
+const UCompanyCompany_idRouteWithChildren =
+  UCompanyCompany_idRoute._addFileChildren(UCompanyCompany_idRouteChildren)
+
+interface URouteChildren {
+  ULayoutRoute: typeof ULayoutRoute
+  UCompaniesRoute: typeof UCompaniesRoute
+  UCompanyCompany_idRoute: typeof UCompanyCompany_idRouteWithChildren
+}
+
+const URouteChildren: URouteChildren = {
+  ULayoutRoute: ULayoutRoute,
+  UCompaniesRoute: UCompaniesRoute,
+  UCompanyCompany_idRoute: UCompanyCompany_idRouteWithChildren,
+}
+
+const URouteWithChildren = URoute._addFileChildren(URouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  DashboardRoute: DashboardRoute,
+  CompaniesRoute: CompaniesRoute,
   LoginRoute: LoginRoute,
+  URoute: URouteWithChildren,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

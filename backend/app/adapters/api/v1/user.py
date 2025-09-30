@@ -4,12 +4,14 @@ from typing import List
 from app.adapters.orm.models.user import User
 from app.core.use_cases.user import (
     create_user_use_case,
+    get_user_me_use_case,
     get_users_use_case,
     get_user_use_case,
     update_user_use_case,
     delete_user_use_case
 )
 from app.adapters.orm.security.permissions import require_permission
+from app.adapters.orm.security.auth import get_current_user
 from app.adapters.orm.database import get_async_db
 from app.core.value_objects import UserCreate, UserResponse, UserUpdate
 
@@ -24,26 +26,37 @@ async def create_user(
     # current_user: User = Depends(require_permission("users", "create"))
 ):
     db_user = await create_user_use_case(db, user, background_tasks, request)
-    return db_user
+    return UserResponse.model_validate(db_user)
 
 @user_router.get("/", response_model=List[UserResponse])
 async def get_users(
     skip: int = 0,
     limit: int = 100,
     db: AsyncSession = Depends(get_async_db),
-    current_user: User = Depends(require_permission("users", "list"))
+    current_user: User = Depends(get_current_user)
+    # current_user: User = Depends(require_permission("users", "list"))
 ):
     users = await get_users_use_case(db, skip, limit)
-    return users
+    return [UserResponse.model_validate(u) for u in users]
+
+@user_router.get("/me", response_model=UserResponse)
+async def get_user_me(
+    db: AsyncSession = Depends(get_async_db),
+    current_user: User = Depends(get_current_user)
+):
+    db_user = await get_user_me_use_case(current_user.id, db)
+    return UserResponse.model_validate(db_user)
 
 @user_router.get("/{user_id}", response_model=UserResponse)
 async def get_user(
     user_id: int,
     db: AsyncSession = Depends(get_async_db),
-    current_user: User = Depends(require_permission("users", "view"))
+    current_user: User = Depends(get_current_user)
+    # current_user: User = Depends(require_permission("users", "view"))
 ):
     db_user = await get_user_use_case(user_id, db)
-    return db_user
+    return UserResponse.model_validate(db_user)
+
 
 @user_router.put("/{user_id}", response_model=UserResponse)
 async def update_user(
@@ -55,7 +68,7 @@ async def update_user(
     current_user: User = Depends(require_permission("users", "update"))
 ):
     db_user = await update_user_use_case(user_id, user_update, background_tasks, current_user, db, request)
-    return db_user
+    return UserResponse.model_validate(db_user)
 
 @user_router.delete("/{user_id}", status_code=status.HTTP_204_NO_CONTENT)
 async def delete_user(

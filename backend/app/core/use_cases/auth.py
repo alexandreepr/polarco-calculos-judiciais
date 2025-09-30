@@ -27,11 +27,11 @@ async def login_for_access_token_use_case(
 
     access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
     access_token = create_access_token(
-        data={"sub": user.username}, expires_delta=access_token_expires
+        data={"sub": str(user.username)}, expires_delta=access_token_expires
     )
 
     refresh_token = create_refresh_token(
-        data={"sub": str(user.id)},
+        data={"sub": str(user.username)},
         expires_delta=timedelta(days=7)
     )
 
@@ -47,7 +47,7 @@ async def login_for_access_token_use_case(
         ip_address=request.client.host if request and request.client else None
     )
 
-    return Token(access_token=access_token, refresh_token=refresh_token, token_type="bearer")
+    return Token(access_token=access_token, refresh_token=refresh_token, token_type="Bearer")
 
 async def refresh_access_token_use_case(
     refresh_token: str,
@@ -57,19 +57,19 @@ async def refresh_access_token_use_case(
 ) -> Token:
     try:
         payload = jwt.decode(refresh_token, SECRET_KEY, algorithms=[ALGORITHM])
-        user_id = payload.get("sub")
-        if not user_id:
+        username = payload.get("sub")
+        if not username:
             raise HTTPException(status_code=401, detail="Invalid refresh token")
     except JWTError:
         raise HTTPException(status_code=401, detail="Invalid refresh token")
 
     # TODO: check token revocation/blacklist here
     access_token = create_access_token(
-        data={"sub": user_id},
+        data={"sub": str(username)},
         expires_delta=timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
     )
     new_refresh_token = create_refresh_token(
-        data={"sub": user_id},
+        data={"sub": str(username)},
         expires_delta=timedelta(days=7)
     )
 
@@ -77,14 +77,14 @@ async def refresh_access_token_use_case(
         background_tasks.add_task(
             create_audit_log,
             db=db,
-            user_id=user_id,
+            # user_id=user_id,
             action="refresh_token",
             resource_type="auth",
             details={"success": True},
             ip_address=request.client.host if request and request.client else None
         )
 
-    return Token(access_token=access_token, refresh_token=new_refresh_token, token_type="bearer")
+    return Token(access_token=access_token, refresh_token=new_refresh_token, token_type="Bearer")
 
 async def store_refresh_token(db: AsyncSession, user_id: uuid.UUID, token: str, expires_in_days: int = 7):
     expires_at = datetime.now(timezone.utc) + timedelta(days=expires_in_days)
