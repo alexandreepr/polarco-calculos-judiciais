@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { API_URL } from "@/common/config";
 import { useNavigate } from "@tanstack/react-router";
 import { useAuth } from "@/common/AuthProvider";
+import axios from "axios";
 // import { API_URL } from "@/common/config";
 
 export interface CreateCompanyFormProps {
@@ -15,34 +16,34 @@ export function CreateCompanyForm({ onSuccess }: CreateCompanyFormProps) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate()
-
-  const { accessToken } = useAuth();
+  const { loadingAuth } = useAuth();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     setError(null);
-    const res = await fetch(`${API_URL}/api/v1/companies`, {
-      method: "POST",
-      headers: { 
-        "Content-Type": "application/json",
-        "Authorization": `Bearer ${accessToken}`,
-      },
-      body: JSON.stringify({ name, cnpj }),
-      credentials: "include",
-    });
-    setLoading(false);
-    if (res.ok) {
+
+    try {
+      const res = await axios.post(
+        "/api/v1/companies",
+        { name, cnpj },
+        { withCredentials: true }
+      );
+
+      const data: any = res.data;
       setName("");
       setCnpj("");
       onSuccess();
-      
-      const data: any = await res.json();
-      
       navigate({ to: `/u/company/${data.id}/dashboard` });
-    } else {
-      const data: any = await res.json().catch(() => ({}));
-      setError(data.detail || "Erro ao criar empresa");
+    } catch (err: any) {
+      const msg =
+        err?.response?.data?.detail ||
+        err?.response?.data?.message ||
+        err?.message ||
+        "Erro ao criar empresa";
+      setError(msg);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -54,7 +55,7 @@ export function CreateCompanyForm({ onSuccess }: CreateCompanyFormProps) {
         onChange={e => setName(e.target.value)}
         placeholder="Nome da empresa"
         required
-        disabled={loading}
+        disabled={loading || loadingAuth}
       />
       <input
         className="border px-2 py-1 rounded"
@@ -62,7 +63,7 @@ export function CreateCompanyForm({ onSuccess }: CreateCompanyFormProps) {
         onChange={e => setCnpj(e.target.value)}
         placeholder="CNPJ"
         required
-        disabled={loading}
+        disabled={loading || loadingAuth}
       />
       <Button type="submit" disabled={loading || !name.trim() || !cnpj.trim()}>
         {loading ? "Criando..." : "Criar"}

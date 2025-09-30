@@ -5,6 +5,7 @@ from .auth import auth_router
 from .company import company_router
 from .permissions import permission_router
 from .roles import role_router
+from .legal_cases import legal_case_router
 
 router = APIRouter(prefix="/v1")
 
@@ -13,3 +14,4 @@ router.include_router(auth_router)
 router.include_router(company_router)
 router.include_router(permission_router)
 router.include_router(role_router)
+router.include_router(legal_case_router)

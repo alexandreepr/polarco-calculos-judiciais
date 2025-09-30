@@ -1,3 +1,4 @@
+import axios from "axios";
 import { useQuery } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -8,25 +9,26 @@ import { CreateCompanyForm } from "@/components/forms/CreateCompanyForm";
 import { Avatar } from "@radix-ui/react-avatar";
 import { useAuth } from "@/common/AuthProvider";
 import { useNavigate } from "@tanstack/react-router";
+import { AvatarImage } from "@/components/ui/avatar";
 
 export function Companies() {
-  const {accessToken} = useAuth()
+  const { loadingAuth } = useAuth();
   const [showCreate, setShowCreate] = useState(false);
   const navigate = useNavigate()
 
   // Fetch companies the user is a member of
   const { data: companies = [], isLoading } = useQuery<Company[]>({
     queryKey: ["companies"],
+    enabled: !loadingAuth, // don't run until AuthProvider finished
     queryFn: async () => {
-      const res = await fetch( `http://localhost:8000/api/v1/companies/me`, {     
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-        },
-      });
-      if (!res.ok) {
-        throw new Error("Failed to fetch companies");
+      try {
+        const res = await axios.get("/api/v1/companies/me", {
+          withCredentials: true,
+        });
+        return res.data as Company[];
+      } catch (err: any) {
+        throw new Error(err?.response?.data?.detail || "Failed to fetch companies");
       }
-      return res.json() as Promise<Company[]>;
     },
   });
 
@@ -48,7 +50,7 @@ export function Companies() {
             <Avatar
               className="w-16 h-16 rounded-md bg-primary text-primary-foreground flex items-center justify-center text-2xl font-bold select-none"
             >
-              {company.name?.[0]?.toUpperCase() ?? "?"}
+              <AvatarImage src="/Logo_PBL_Fundo_Verde.jpg" alt="Company Logo" />
             </Avatar>
             <div className="flex-1">
               <div className="text-lg font-semibold">{company.name}</div>
