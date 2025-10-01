@@ -86,10 +86,13 @@ import {
   TabsList,
   TabsTrigger,
 } from "@/components/ui/tabs"
+import { Link } from "@tanstack/react-router"
 
 export const schema = z.object({
   id: z.number(),
   header: z.string(),
+  legal_case_id: z.string(),
+  company_id: z.string(),
   type: z.string(),
   status: z.string(),
   target: z.string(),
@@ -98,21 +101,25 @@ export const schema = z.object({
 
 const columns: ColumnDef<z.infer<typeof schema>>[] = [
   {
+    accessorKey: "type",
+    header: "Número do Processo",
+    cell: ({ row }) => (
+      <div className="w-32">
+          <Link
+              to={`/u/company/${row.original.company_id}/legal-cases/${row.original.legal_case_id}/` as any}
+          >
+            {row.original.type}
+          </Link>
+      </div>
+    ),
+  },
+  {
     accessorKey: "header",
     header: "Cliente",
     cell: ({ row }) => {
       return <TableCellViewer item={row.original} />
     },
     enableHiding: false,
-  },
-  {
-    accessorKey: "type",
-    header: "Número do Processo",
-    cell: ({ row }) => (
-      <div className="w-32">
-        <span>{row.original.type}</span>
-      </div>
-    ),
   },
   {
     accessorKey: "status",

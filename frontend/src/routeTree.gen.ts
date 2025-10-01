@@ -20,6 +20,7 @@ import { Route as UCompanyCompany_idDashboardRouteImport } from './routes/u/comp
 import { Route as UCompanyCompany_idLayoutRouteImport } from './routes/u/company/$company_id/_layout'
 import { Route as UCompanyCompany_idLegalCasesIndexRouteImport } from './routes/u/company/$company_id/legal-cases/index'
 import { Route as UCompanyCompany_idLegalCasesNewRouteImport } from './routes/u/company/$company_id/legal-cases/new'
+import { Route as UCompanyCompany_idLegalCasesLegal_case_idIndexRouteImport } from './routes/u/company/$company_id/legal-cases/$legal_case_id/index'
 
 const URouteImport = createFileRoute('/u')()
 const UCompanyCompany_idRouteImport = createFileRoute(
@@ -83,6 +84,12 @@ const UCompanyCompany_idLegalCasesNewRoute =
     path: '/legal-cases/new',
     getParentRoute: () => UCompanyCompany_idRoute,
   } as any)
+const UCompanyCompany_idLegalCasesLegal_case_idIndexRoute =
+  UCompanyCompany_idLegalCasesLegal_case_idIndexRouteImport.update({
+    id: '/legal-cases/$legal_case_id/',
+    path: '/legal-cases/$legal_case_id/',
+    getParentRoute: () => UCompanyCompany_idRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -94,6 +101,7 @@ export interface FileRoutesByFullPath {
   '/u/company/$company_id/dashboard': typeof UCompanyCompany_idDashboardRoute
   '/u/company/$company_id/legal-cases/new': typeof UCompanyCompany_idLegalCasesNewRoute
   '/u/company/$company_id/legal-cases': typeof UCompanyCompany_idLegalCasesIndexRoute
+  '/u/company/$company_id/legal-cases/$legal_case_id': typeof UCompanyCompany_idLegalCasesLegal_case_idIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -105,6 +113,7 @@ export interface FileRoutesByTo {
   '/u/company/$company_id/dashboard': typeof UCompanyCompany_idDashboardRoute
   '/u/company/$company_id/legal-cases/new': typeof UCompanyCompany_idLegalCasesNewRoute
   '/u/company/$company_id/legal-cases': typeof UCompanyCompany_idLegalCasesIndexRoute
+  '/u/company/$company_id/legal-cases/$legal_case_id': typeof UCompanyCompany_idLegalCasesLegal_case_idIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -119,6 +128,7 @@ export interface FileRoutesById {
   '/u/company/$company_id/dashboard': typeof UCompanyCompany_idDashboardRoute
   '/u/company/$company_id/legal-cases/new': typeof UCompanyCompany_idLegalCasesNewRoute
   '/u/company/$company_id/legal-cases/': typeof UCompanyCompany_idLegalCasesIndexRoute
+  '/u/company/$company_id/legal-cases/$legal_case_id/': typeof UCompanyCompany_idLegalCasesLegal_case_idIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -132,6 +142,7 @@ export interface FileRouteTypes {
     | '/u/company/$company_id/dashboard'
     | '/u/company/$company_id/legal-cases/new'
     | '/u/company/$company_id/legal-cases'
+    | '/u/company/$company_id/legal-cases/$legal_case_id'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -143,6 +154,7 @@ export interface FileRouteTypes {
     | '/u/company/$company_id/dashboard'
     | '/u/company/$company_id/legal-cases/new'
     | '/u/company/$company_id/legal-cases'
+    | '/u/company/$company_id/legal-cases/$legal_case_id'
   id:
     | '__root__'
     | '/'
@@ -156,6 +168,7 @@ export interface FileRouteTypes {
     | '/u/company/$company_id/dashboard'
     | '/u/company/$company_id/legal-cases/new'
     | '/u/company/$company_id/legal-cases/'
+    | '/u/company/$company_id/legal-cases/$legal_case_id/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -244,6 +257,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof UCompanyCompany_idLegalCasesNewRouteImport
       parentRoute: typeof UCompanyCompany_idRoute
     }
+    '/u/company/$company_id/legal-cases/$legal_case_id/': {
+      id: '/u/company/$company_id/legal-cases/$legal_case_id/'
+      path: '/legal-cases/$legal_case_id'
+      fullPath: '/u/company/$company_id/legal-cases/$legal_case_id'
+      preLoaderRoute: typeof UCompanyCompany_idLegalCasesLegal_case_idIndexRouteImport
+      parentRoute: typeof UCompanyCompany_idRoute
+    }
   }
 }
 
@@ -252,6 +272,7 @@ interface UCompanyCompany_idRouteChildren {
   UCompanyCompany_idDashboardRoute: typeof UCompanyCompany_idDashboardRoute
   UCompanyCompany_idLegalCasesNewRoute: typeof UCompanyCompany_idLegalCasesNewRoute
   UCompanyCompany_idLegalCasesIndexRoute: typeof UCompanyCompany_idLegalCasesIndexRoute
+  UCompanyCompany_idLegalCasesLegal_case_idIndexRoute: typeof UCompanyCompany_idLegalCasesLegal_case_idIndexRoute
 }
 
 const UCompanyCompany_idRouteChildren: UCompanyCompany_idRouteChildren = {
@@ -260,6 +281,8 @@ const UCompanyCompany_idRouteChildren: UCompanyCompany_idRouteChildren = {
   UCompanyCompany_idLegalCasesNewRoute: UCompanyCompany_idLegalCasesNewRoute,
   UCompanyCompany_idLegalCasesIndexRoute:
     UCompanyCompany_idLegalCasesIndexRoute,
+  UCompanyCompany_idLegalCasesLegal_case_idIndexRoute:
+    UCompanyCompany_idLegalCasesLegal_case_idIndexRoute,
 }
 
 const UCompanyCompany_idRouteWithChildren =
