@@ -25,7 +25,7 @@ export function CreateCompanyForm({ onSuccess }: CreateCompanyFormProps) {
 
     try {
       const res = await axios.post(
-        "/api/v1/companies",
+        "/api/v1/companies/",
         { name, cnpj },
         { withCredentials: true }
       );

@@ -2,8 +2,8 @@ from typing import List, Optional
 from sqlalchemy import String, Text
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
-from .base import Base
-from .association_tables import user_groups, group_roles
+from app.adapters.orm.models.base import Base
+from app.adapters.orm.models.association_tables import user_groups, group_roles
 
 
 class Group(Base):

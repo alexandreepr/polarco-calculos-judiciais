@@ -73,16 +73,16 @@ async def refresh_access_token_use_case(
         expires_delta=timedelta(days=7)
     )
 
-    if background_tasks and request:
-        background_tasks.add_task(
-            create_audit_log,
-            db=db,
-            # user_id=user_id,
-            action="refresh_token",
-            resource_type="auth",
-            details={"success": True},
-            ip_address=request.client.host if request and request.client else None
-        )
+    # if background_tasks and request:
+    #     background_tasks.add_task(
+    #         create_audit_log,
+    #         db=db,
+    #         user_id=uuid.uuid4(),
+    #         action="refresh_token",
+    #         resource_type="auth",
+    #         details={"success": True},
+    #         ip_address=request.client.host if request and request.client else None
+    #     )
 
     return Token(access_token=access_token, refresh_token=new_refresh_token, token_type="Bearer")
 

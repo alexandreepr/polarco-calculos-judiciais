@@ -59,7 +59,6 @@ export function LegalCases() {
     // map to the columns used in DataTable
     target: c.attorney ?? c.assignee_from_litigation_team_id ?? "—",
     reviewer: c.assignee_from_commercial_team_id ?? "Selecionar responsável",
-    // keep raw id if you need it elsewhere (extra field is ok)
     _rawId: c.id,
   }))
 
